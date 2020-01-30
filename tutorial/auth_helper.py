@@ -42,3 +42,50 @@ def get_token_from_code(callback_url, expected_state):
     authorization_response=callback_url)
 
   return token
+
+def store_token(request, token):
+  request.session['oauth_token'] = token
+
+def store_user(request, user):
+  request.session['user'] = {
+    'is_authenticated': True,
+    'name': user['displayName'],
+    'email': user['mail'] if (user['mail'] != None) else user['userPrincipalName']
+  }
+
+def get_token(request):
+  token = request.session['oauth_token']
+  if token != None:
+    # Check expiration
+    now = time.time()
+    # Subtract 5 minutes from expiration to account for clock skew
+    expire_time = token['expires_at'] - 300
+    if now >= expire_time:
+      # Refresh the token
+      aad_auth = OAuth2Session(settings['app_id'],
+        token = token,
+        scope=settings['scopes'],
+        redirect_uri=settings['redirect'])
+
+      refresh_params = {
+        'client_id': settings['app_id'],
+        'client_secret': settings['app_secret'],
+      }
+      new_token = aad_auth.refresh_token(token_url, **refresh_params)
+
+      # Save new token
+      store_token(request, new_token)
+
+      # Return new access token
+      return new_token
+
+    else:
+      # Token still valid, just return it
+      return token
+
+def remove_user_and_token(request):
+  if 'oauth_token' in request.session:
+    del request.session['oauth_token']
+
+  if 'user' in request.session:
+    del request.session['user']  
