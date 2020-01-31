@@ -9,5 +9,16 @@
   {% else %}
     <a href="{% url 'signin' %}" class="btn btn-primary btn-large">Click here to sign in</a>
   {% endif %}
+  {% if questions %}
+	{% for q in questions %}
+	<div>{{ q.question }}</div>
+	<div>{{ q.answer }}</div>
+	<div>{{ q.likes }}</div>
+	<div>{{ q.date_asked }}</div>
+	<div>{{ q.asked_by }}</div>
+	{% endfor %}
+  {% else %}
+  	<div>No questions to show</div>	
+  {% endif %}	
 </div>
 {% endblock %}

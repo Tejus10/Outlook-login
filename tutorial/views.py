@@ -3,6 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
 from tutorial.graph_helper import get_user
+from .models import ques
+from django.contrib.auth.decorators import login_required
 
 def home(request):
   context = initialize_context(request)
@@ -11,7 +13,8 @@ def home(request):
 
 def initialize_context(request):
   context = {}
-
+  question = ques.objects.all()
+  context['questions'] = question
   # Check for any errors in the session
   error = request.session.pop('flash_error', None)
 
@@ -51,3 +54,9 @@ def sign_out(request):
   remove_user_and_token(request)
 
   return HttpResponseRedirect(reverse('home'))  
+
+@login_required
+def ask(request):
+	context = initialize_context(request)
+
+	return render(request, 'tutorial/ask.html', context)
