@@ -13,7 +13,8 @@
       integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'tutorial/app.css' %}">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{% static 'tutorial/ajax.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
       integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
@@ -36,11 +37,14 @@
             <li class="nav-item">
               <a href="{% url 'ask' %}" class="nav-link{% if request.resolver_match.view_name == 'ask' %} active{% endif %}">Ask a question</a>
             </li>
-            <!-- {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
               <li class="nav-item" data-turbolinks="false">
-                <a class="nav-link{% if request.resolver_match.view_name == 'calendar' %} active{% endif %}" href="#">Calendar</a>
+                <a class="nav-link{% if request.resolver_match.view_name == 'my_ques' %} active{% endif %}" href="{% url 'my_ques' %}">My Questions</a>
               </li>
-            {% endif %} -->
+            {% endif %}
+            <li class="nav-item">
+              <a href="{% url 'all' %}" class="nav-link{% if request.resolver_match.view_name == 'all' %} active{% endif %}">All Questions</a>
+            </li>
           </ul>
           <ul class="navbar-nav justify-content-end">
             <li class="nav-item">
@@ -86,6 +90,6 @@
       {% endif %}
       {% block content %}{% endblock %}
     </main>
-    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
   </body>
 </html>

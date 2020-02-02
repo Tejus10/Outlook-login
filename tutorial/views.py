@@ -4,6 +4,7 @@ from django.urls import reverse
 from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
 from tutorial.graph_helper import get_user
 from .models import ques
+from django.template.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 
 def home(request):
@@ -14,8 +15,8 @@ def home(request):
 def initialize_context(request):
   context = {}
   context.update(csrf(request))
-  question = ques.objects.all()
-  context['questions'] = question
+  # question = ques.objects.all()
+  # context['questions'] = question
   # Check for any errors in the session
   error = request.session.pop('flash_error', None)
 
@@ -69,7 +70,30 @@ def ask(request):
 def search_ques(request):
   if request.method == 'POST':
     search_text = request.POST['search_text']
+    all_ques = ques.objects.filter(question__contains=search_text)
+    all_ques |= ques.objects.filter(asked_by__contains=search_text)
   else:
-    search_text=''  
-  all_ques = ques.objects.filter(question__contains=search_text)
+    search_text = ''
+    all_ques = []  
+  
   return render(request, 'tutorial/ajax_search.html', { 'all_ques': all_ques } )    
+
+def my_ques(request):
+  context = initialize_context(request)
+  try:
+    request.session['user']
+  except:
+    return HttpResponseRedirect(reverse('signin'))
+  else:
+    all_ques = ques.objects.filter(asked_by=request.session['user']['name'])
+    context['all_ques'] = all_ques
+    return render(request, 'tutorial/my_ques.html', context )  
+
+
+def all(request):
+  question = ques.objects.all().order_by('-date_asked')
+  context = {}
+  context = initialize_context(request)
+  context.update(csrf(request))
+  context['questions'] = question
+  return render(request, 'tutorial/all.html', context)
