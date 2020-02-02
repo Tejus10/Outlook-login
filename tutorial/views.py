@@ -97,3 +97,22 @@ def all(request):
   context.update(csrf(request))
   context['questions'] = question
   return render(request, 'tutorial/all.html', context)
+
+
+def sort_ques(request):
+  if request.method == 'POST':
+    search_text = str(request.POST['search_text'])
+    if search_text=='latest':
+      all_ques = ques.objects.all().order_by('-date_asked')
+    elif search_text=='oldest':
+      all_ques = ques.objects.all().order_by('date_asked')
+    elif search_text=='mlike':
+      all_ques = ques.objects.all().order_by('-likes')
+    elif search_text=='llike':
+      all_ques = ques.objects.all().order_by('likes')      
+        
+  else:
+    search_text = ''
+    all_ques = []  
+  
+  return render(request, 'tutorial/ajax_sort.html', { 'all_ques': all_ques } )  

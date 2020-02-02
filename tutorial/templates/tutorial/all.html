@@ -1,5 +1,7 @@
 {% extends "tutorial/layout.html" %}
 {% block content %}
+{% load static %}
+
 <div class="jumbotron">
 	{% csrf_token %}
 	<label for="sort">Sort By</label>
@@ -14,10 +16,13 @@
 			Most Liked
 		</option>
 		<option value="llike">
-			Least Likes
+			Least Liked
 		</option>
 	</select>
-	{% if questions.count > 0 %}
+	<div id="sort-result">
+		
+	</div>
+<!-- 	{% if questions.count > 0 %}
 		{% for q in questions %}
 		<div>{{ q.question }}</div>
 		<div>{{ q.answer }}</div>
@@ -28,6 +33,7 @@
 	{% else %}
 		No questions found
 	{% endif %}
-
+ -->
 </div>
+<script src="{% static 'tutorial/ajax-sort.js' %}"></script>
 {% endblock %}
