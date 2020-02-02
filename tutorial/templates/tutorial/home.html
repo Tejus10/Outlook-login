@@ -1,7 +1,7 @@
 {% extends "tutorial/layout.html" %}
 {% block content %}
 <div class="jumbotron">
-  <h1>Python Graph Tutorial</h1>
+  <h1>Frequently Asked Questions</h1>
   <p class="lead">This sample app shows how to use the Microsoft Graph API to access Outlook and OneDrive data from Python</p>
   {% if user.is_authenticated %}
     <h4>Welcome {{ user.name }}!</h4>
@@ -9,13 +9,19 @@
   {% else %}
     <a href="{% url 'signin' %}" class="btn btn-primary btn-large">Click here to sign in</a>
   {% endif %}
+  <h3>Search</h3>
+  {% csrf_token %}
+  <input type="text" name="search" id="search">
+
+  <ul id="search-results"></ul>
+
   {% if questions %}
 	{% for q in questions %}
 	<div>{{ q.question }}</div>
 	<div>{{ q.answer }}</div>
-	<div>{{ q.likes }}</div>
+	<div>{{ q.likes }} Likes</div>
 	<div>{{ q.date_asked }}</div>
-	<div>{{ q.asked_by }}</div>
+	<div>By- {{ q.asked_by }}</div>
 	{% endfor %}
   {% else %}
   	<div>No questions to show</div>	

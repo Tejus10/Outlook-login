@@ -8,4 +8,5 @@ urlpatterns = [
   path('signin', views.sign_in, name='signin'),
   path('callback', views.callback, name='callback'),
   path('signout', views.sign_out, name='signout'),
+  path('search', views.search_ques, name='search_ques'),  
 ]

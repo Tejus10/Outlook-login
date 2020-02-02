@@ -13,6 +13,7 @@ def home(request):
 
 def initialize_context(request):
   context = {}
+  context.update(csrf(request))
   question = ques.objects.all()
   context['questions'] = question
   # Check for any errors in the session
@@ -55,8 +56,20 @@ def sign_out(request):
 
   return HttpResponseRedirect(reverse('home'))  
 
-@login_required
-def ask(request):
-	context = initialize_context(request)
 
-	return render(request, 'tutorial/ask.html', context)
+def ask(request):
+  context = initialize_context(request)
+  try:
+    request.session['user']
+  except:
+    return HttpResponseRedirect(reverse('signin'))
+  else:
+    return render(request, 'tutorial/ask.html', context)
+
+def search_ques(request):
+  if request.method == 'POST':
+    search_text = request.POST['search_text']
+  else:
+    search_text=''  
+  all_ques = ques.objects.filter(question__contains=search_text)
+  return render(request, 'tutorial/ajax_search.html', { 'all_ques': all_ques } )    
