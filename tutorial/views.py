@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
@@ -7,6 +7,9 @@ from .models import ques
 from django.template.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User 
+from django.views.generic import CreateView
+from .forms import quesCreateView
+from django.contrib import messages
 
 def home(request):
   context = initialize_context(request)
@@ -60,8 +63,18 @@ def sign_out(request):
 
 @login_required
 def ask(request):
-  context = initialize_context(request)
-  return render(request, 'tutorial/ask.html', context)
+  context = initialize_context(request) 
+  if request.method == 'POST':
+    form = quesCreateView(request.POST)
+    if form.is_valid():
+      question = form.cleaned_data.get('question')
+      form.instance.asked_by= request.user    
+      form.save()
+      messages.success(request, f'Your question will Soon be Answered. Meanwhile Browse mostly asked questions!!!!')
+      return redirect('home')
+  form = quesCreateView()
+  context['form'] = form
+  return render(request, 'tutorial/ques_form.html', context)
 
 def search_ques(request):
   if request.method == 'POST':

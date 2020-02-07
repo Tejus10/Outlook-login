@@ -11,7 +11,7 @@ class ques(models.Model):
 	likes = models.IntegerField(default=0)
 	date_asked = models.DateTimeField(default=timezone.now)
 	asked_by = models.CharField(max_length=50)
-
+	liked_by = models.ManyToManyField(User , related_name = 'likes', blank = True )
 
 	def __str__(self):
 		return self.question	 
