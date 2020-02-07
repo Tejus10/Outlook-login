@@ -2,6 +2,8 @@ import yaml
 from requests_oauthlib import OAuth2Session
 import os
 import time
+from django.contrib.auth.models import User 
+from django.contrib.auth import login, authenticate, logout
 
 # This is necessary for testing with non-HTTPS localhost
 # Remove this if deploying to production
@@ -33,7 +35,7 @@ def get_sign_in_url():
 def get_token_from_code(callback_url, expected_state):
   # Initialize the OAuth client
   aad_auth = OAuth2Session(settings['app_id'],
-    state=expected_state,
+    #state=expected_state,
     scope=settings['scopes'],
     redirect_uri=settings['redirect'])
 
@@ -47,11 +49,24 @@ def store_token(request, token):
   request.session['oauth_token'] = token
 
 def store_user(request, user):
+  name = user['displayName']
+  mail = user['mail'] if (user['mail'] != None) else user['userPrincipalName']
+
   request.session['user'] = {
     'is_authenticated': True,
-    'name': user['displayName'],
-    'email': user['mail'] if (user['mail'] != None) else user['userPrincipalName']
+    'name': name,
+    'email': mail
   }
+
+  if User.objects.filter(username = name):
+    user = authenticate(username=name, password=mail)
+    login(request, user)
+  else:    
+    user = User.objects.create_user(name , password=mail)
+    user.is_superuser=False
+    user.save()
+    user = authenticate(username=name, password=mail)
+    login(request, user) 
 
 def get_token(request):
   token = request.session['oauth_token']
@@ -88,4 +103,5 @@ def remove_user_and_token(request):
     del request.session['oauth_token']
 
   if 'user' in request.session:
-    del request.session['user']  
+    del request.session['user']
+  logout(request)    

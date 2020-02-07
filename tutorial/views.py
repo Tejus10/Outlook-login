@@ -6,6 +6,7 @@ from tutorial.graph_helper import get_user
 from .models import ques
 from django.template.context_processors import csrf
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User 
 
 def home(request):
   context = initialize_context(request)
@@ -57,15 +58,10 @@ def sign_out(request):
 
   return HttpResponseRedirect(reverse('home'))  
 
-
+@login_required
 def ask(request):
   context = initialize_context(request)
-  try:
-    request.session['user']
-  except:
-    return HttpResponseRedirect(reverse('signin'))
-  else:
-    return render(request, 'tutorial/ask.html', context)
+  return render(request, 'tutorial/ask.html', context)
 
 def search_ques(request):
   if request.method == 'POST':
@@ -78,19 +74,22 @@ def search_ques(request):
   
   return render(request, 'tutorial/ajax_search.html', { 'all_ques': all_ques } )    
 
+@login_required
 def my_ques(request):
   context = initialize_context(request)
-  try:
-    request.session['user']
-  except:
-    return HttpResponseRedirect(reverse('signin'))
-  else:
-    all_ques = ques.objects.filter(asked_by=request.session['user']['name'])
-    context['all_ques'] = all_ques
-    return render(request, 'tutorial/my_ques.html', context )  
+  # try:
+  #   request.session['user']
+  # except:
+  #   return HttpResponseRedirect(reverse('signin'))
+  # else:
+  all_ques = ques.objects.filter(asked_by=request.session['user']['name'])
+  context['all_ques'] = all_ques
+  return render(request, 'tutorial/my_ques.html', context )  
 
 
 def all(request):
+  # if request.method == 'POST':
+    
   question = ques.objects.all().order_by('-date_asked')
   context = {}
   context = initialize_context(request)
