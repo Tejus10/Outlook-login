@@ -11,7 +11,7 @@ django-crispy-forms==1.8.1
 django-microsoft-auth==2.3.1
 idna==2.8
 oauthlib==3.1.0
-Pillow==6.2.1
+Pillow==9.3.0
 pipenv==2018.11.26
 pycparser==2.19
 PyJWT==1.7.1
